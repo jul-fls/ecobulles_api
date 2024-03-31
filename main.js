@@ -81,16 +81,38 @@ async function getConsoBoiteItemAppFilter(ecoRef, startdate, stopdate) {
     });
 }
   
+async function sendUserCommandBoiteItem(ecoRef, userId, suptime) {
+    const url = 'https://ecobulles.agom.net/cmd/sendUserCommandBoiteItem.php';
+    const data = new URLSearchParams({
+        eco_ref: ecoRef,
+        user_id: userId,
+        state: 'suspended',
+        suptime: suptime
+    });
   
+    return axios.post(url, data, {
+            headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'User-Agent': 'Ecobulles'
+            }
+    })
+    .then(response => response.data.data)
+    .catch(error => {
+        console.error(error);
+        throw error;
+    });
+}
 
 async function main(){
     const login_data = await login(process.env.ECOBULLES_EMAIL, process.env.ECOBULLES_PASSWORD)
     let ecoref = login_data.eco_ref;
-    console.log(ecoref)
+    let userId = login_data.user_id;
+    // console.log(ecoref)
 
     // console.log(JSON.stringify(login_data, null, 2))
     // console.log(JSON.stringify(await getAppUserCo2(ecoref), null, 2))
-    // console.log(JSON.stringify(await getConsoBoiteItemAppFilter(ecoref, '2024-03-29 08:00:00', '2024-03-29 09:00:00'), null, 2))
+    // console.log(JSON.stringify(await getConsoBoiteItemAppFilter(ecoref, '2024-03-29 15:00:00', '2024-03-29 16:00:00'), null, 2))
+    console.log(JSON.stringify(await sendUserCommandBoiteItem(ecoref, userId, '10'), null, 2))
 }
 
 main()
